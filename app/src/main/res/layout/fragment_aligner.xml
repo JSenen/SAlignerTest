@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TemperatureFragment">
+    android:background="@color/white"
+    tools:context=".AlignerFragment"
+    >
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -14,31 +16,11 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/ButServOn"
+            android:id="@+id/ButSample3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Serv ON" />
+            android:text="Sample3" />
 
-        <Button
-            android:id="@+id/butSetOff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Set OFF" />
-
-        <Button
-            android:id="@+id/butTempOffSet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="temp OffSet" />
-
-        <Button
-            android:id="@+id/butGetTemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Get Temp" />
     </LinearLayout>
 
     <TextView
@@ -54,6 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:textColor="@color/colorSendText"
         android:text="Text Code"
         android:textSize="24sp" />
 

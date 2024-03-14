@@ -294,7 +294,7 @@ public class DevicesFragment extends ListFragment {
 //        fragment.setArguments(args);
 //        getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "terminal").addToBackStack(null).commit();
 
-       Fragment fragment = new TemperatureFragment();
+       Fragment fragment = new AlignerFragment();
         fragment.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "temperature").addToBackStack(null).commit();
     }

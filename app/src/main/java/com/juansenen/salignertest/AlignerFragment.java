@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -22,23 +23,23 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 
 
-public class TemperatureFragment extends Fragment implements ServiceConnection, SerialListener {
+public class AlignerFragment extends Fragment implements ServiceConnection, SerialListener {
 
-    private static final String TAG = "TemperatureFragment";
+    private static final String TAG = "AlignerFragment";
     private enum Connected {False, Pending, True}
 
     private TextView resposteText;
     private TextView connectionStatus;
-    private Button buttonServOn, buttonSetOff, buttonTempOffset, buttonGetTemp;
+    private Button mButtonSample3;
     private String deviceAddress;
     private SerialService service;
     private Connected connected = Connected.False;
     private boolean waitForFirstResponse = true;
-
+    //TODO: Clean variables dont use
     private static final String EXPECTED_FIRST_RESPONSE = "020606031104";
 
 
-    public TemperatureFragment() {
+    public AlignerFragment() {
         // Required empty public constructor
     }
     @Override
@@ -118,44 +119,21 @@ public class TemperatureFragment extends Fragment implements ServiceConnection, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View temperatureView = inflater.inflate(R.layout.fragment_temperature, container, false);
-        resposteText = temperatureView.findViewById(R.id.textCode);
-        buttonServOn = temperatureView.findViewById(R.id.ButServOn);
-        buttonSetOff = temperatureView.findViewById(R.id.butSetOff);
-        buttonTempOffset = temperatureView.findViewById(R.id.butTempOffSet);
-        buttonGetTemp = temperatureView.findViewById(R.id.butGetTemp);
-        connectionStatus = temperatureView.findViewById(R.id.connectionStatus);
+        View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
+        resposteText = alignerView.findViewById(R.id.textCode);
+        mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
+        connectionStatus = alignerView.findViewById(R.id.connectionStatus);
 
 
-        buttonServOn.setOnClickListener(new View.OnClickListener() {
+        mButtonSample3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                send("0207E20103EF04");
-            }
-        });
-        buttonSetOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                send("0208F90037033D04");
-            }
-        });
-        buttonTempOffset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                send("0206F8030304");
-            }
-        });
-        buttonGetTemp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                send("0206E403EF04");
-                // Aquí agregamos una verificación para asegurarnos de que el procesamiento adicional
-                // solo se realice cuando se presiona el botón de getTemp
-                waitForFirstResponse = true; // Reiniciar el flag para esperar la primera respuesta
+                send("55000B0603000A000073AA");
             }
         });
 
-        return temperatureView;
+
+        return alignerView;
     }
 
 
@@ -184,14 +162,14 @@ public class TemperatureFragment extends Fragment implements ServiceConnection, 
     public void onSerialConnect() {
         connected = Connected.True;
         updateConnectionStatus(true);
-        Log.d("TemperatureFragment", "onSerialConnect() called");
+        Log.d("AlignerFragment", "onSerialConnect() called");
     }
 
     @Override
     public void onSerialConnectError(Exception e) {
         connected = Connected.False;
         updateConnectionStatus(false);
-        Log.e("TemperatureFragment", "onSerialConnectError() called with error: " + e.getMessage());
+        Log.e("AlignerFragment", "onSerialConnectError() called with error: " + e.getMessage());
     }
 
     @Override
@@ -202,35 +180,12 @@ public class TemperatureFragment extends Fragment implements ServiceConnection, 
         // Mostrar los datos recibidos en el Log
         Log.d(TAG, "Received data: " + hexString);
 
-        // Convertir el código esperado a una cadena hexadecimal
-        String expectedHexString = TextUtil.toHexString(TextUtil.fromHexString(EXPECTED_FIRST_RESPONSE));
 
-        if (waitForFirstResponse) {
-            // Verificar si la primera respuesta coincide con el código esperado
-            if (hexString.equals(expectedHexString)) {
-                // Si es el código esperado, esperar la segunda respuesta
-                waitForFirstResponse = false;
-            } else {
-                // Si no es el código esperado, mostrar en el TextView
                 resposteText.setText(hexString);
-            }
-        } else {
-            // Convertir la parte relevante de la segunda respuesta a decimal
-            String relevantDataHexString = hexString.substring(10, 14);
-            int decimalValue = Integer.parseInt(relevantDataHexString, 16);
 
-            // Mostrar el resultado en el TextView
-            resposteText.setText("Decimal value: " + decimalValue);
+
+            resposteText.setText("HEX recibido: " + hexString);
         }
-    }
-
-//        // Mostrar los datos recibidos en el TextView
-//        resposteText.setText(hexString + "\n");
-//
-//        // También puedes agregar un registro para mostrar los datos recibidos en el Log
-//        Log.d(TAG, "Received data in hex: " + hexString);
-
-
 
 
     @Override
@@ -239,24 +194,7 @@ public class TemperatureFragment extends Fragment implements ServiceConnection, 
         receive(datas);
     }
 
-
-//    private void receive(ArrayDeque<byte[]> datas) {
-//        for (byte[] data : datas) {
-//            // Convertir los datos a su representación hexadecimal
-//            String hexString = TextUtil.toHexString(data);
-//            // Mostrar los datos recibidos en el TextView
-//
-//            resposteText.append(hexString + "\n");
-//            // También puedes agregar un registro para mostrar los datos recibidos en el Log
-//            Log.d(TAG, "Received data: " + hexString);
-//        }
-//    }
 private void receive(ArrayDeque<byte[]> datas) {
-    // Variable para controlar si ya hemos mostrado la segunda respuesta
-    boolean secondResponseShown = false;
-
-    // Convertir el código esperado a una cadena hexadecimal
-    String expectedHexString = TextUtil.toHexString(TextUtil.fromHexString(EXPECTED_FIRST_RESPONSE));
 
     for (byte[] data : datas) {
         // Convertir los datos a su representación hexadecimal
@@ -265,36 +203,18 @@ private void receive(ArrayDeque<byte[]> datas) {
         // Mostrar los datos recibidos en el Log
         Log.d(TAG, "Received data: " + hexString);
 
-        // Verificar si la primera respuesta coincide con el código esperado
-        if (waitForFirstResponse && hexString.equals(expectedHexString)) {
-            // Si es el código esperado, marcar que hemos recibido la primera respuesta
-            waitForFirstResponse = false;
-        } else {
-            // Si ya hemos mostrado la segunda respuesta, no necesitamos seguir procesando más datos
-            if (secondResponseShown) {
-                break;
-            }
-
-            // Mostrar la respuesta en el TextView solo si ya hemos recibido la primera respuesta esperada
-            if (!waitForFirstResponse) {
-                // Convertir la parte relevante de la segunda respuesta a decimal
-                String relevantDataHexString = hexString.substring(10, 14).replaceAll("\\s+", ""); //Quitamos espacios en blanco
-                float decimalValue = (Integer.parseInt(relevantDataHexString, 16))/10;
-
                 // Mostrar el resultado en el TextView
-                resposteText.setText("Decimal value: " + decimalValue);
 
-                secondResponseShown = true;
+                resposteText.setText("HEX: " + hexString);
+
             }
-        }
     }
-}
 
     @Override
     public void onSerialIoError(Exception e) {
         connected = Connected.False;
         updateConnectionStatus(false);
-        Log.e("TemperatureFragment", "onSerialIoError() called with error: " + e.getMessage());
+        Log.e("AlignerFragment", "onSerialIoError() called with error: " + e.getMessage());
     }
     private void disconnect() {
         connected = Connected.False;
@@ -304,8 +224,11 @@ private void receive(ArrayDeque<byte[]> datas) {
     private void updateConnectionStatus(boolean isConnected) {
         if (isConnected) {
             connectionStatus.setText("Connected");
+            connectionStatus.setTextColor(Color.parseColor("#75e84f"));
+
         } else {
             connectionStatus.setText("Disconnected");
+            connectionStatus.setTextColor(Color.parseColor("#f05746"));
         }
     }
 
