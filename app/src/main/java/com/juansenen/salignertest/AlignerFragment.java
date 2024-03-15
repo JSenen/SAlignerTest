@@ -29,8 +29,8 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private enum Connected {False, Pending, True}
 
     private TextView resposteText;
-    private TextView connectionStatus;
-    private Button mButtonSample3;
+    private TextView connectionStatus, textReadFrame;
+    private Button mButtonSample3, mButtonReadFrame;
     private String deviceAddress;
     private SerialService service;
     private Connected connected = Connected.False;
@@ -123,6 +123,8 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                              Bundle savedInstanceState) {
         View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
         resposteText = alignerView.findViewById(R.id.textCode);
+        textReadFrame = alignerView.findViewById(R.id.textReadFrame);
+        mButtonReadFrame = alignerView.findViewById(R.id.butReadFrame);
         mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
         connectionStatus = alignerView.findViewById(R.id.connectionStatus);
 

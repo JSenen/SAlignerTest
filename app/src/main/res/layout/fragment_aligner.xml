@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".AlignerFragment"
-    >
+    android:orientation="vertical"
+    tools:context=".AlignerFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -19,7 +19,13 @@
             android:id="@+id/ButSample3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sample3" />
+            android:text="Sample" />
+
+        <Button
+            android:id="@+id/butReadFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Read Frame" />
 
     </LinearLayout>
 
@@ -36,8 +42,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textColor="@color/colorSendText"
         android:text="Text Code"
+        android:textColor="@color/colorSendText"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textReadFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="HEX R_frame"
+        android:textColor="@color/black_overlay"
         android:textSize="24sp" />
 
 </LinearLayout>
