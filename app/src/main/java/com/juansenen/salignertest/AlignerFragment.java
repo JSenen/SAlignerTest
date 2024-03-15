@@ -36,7 +36,9 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private Connected connected = Connected.False;
     private boolean waitForFirstResponse = true;
     //TODO: Clean variables dont use
-    private static final String EXPECTED_FIRST_RESPONSE = "020606031104";
+    private static final String EXPECTED_FIRST_RESPONSE = "550008860300E6AA";
+    private static final String SEND_SETSAMPLE = "55000B0603000A000073AA";
+    private static final String READ_FRAME = "5500090300000061AA";
 
 
     public AlignerFragment() {
@@ -128,7 +130,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         mButtonSample3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                send("55000B0603000A000073AA");
+                send(SEND_SETSAMPLE);
             }
         });
 
@@ -174,17 +176,17 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
 
     @Override
     public void onSerialRead(byte[] data) {
-        // Convertir los datos a su representación hexadecimal
-        String hexString = TextUtil.toHexString(data);
-
-        // Mostrar los datos recibidos en el Log
-        Log.d(TAG, "Received data: " + hexString);
-
-
-                resposteText.setText(hexString);
-
-
-            resposteText.setText("HEX recibido: " + hexString);
+//        // Convertir los datos a su representación hexadecimal
+//        String hexString = TextUtil.toHexString(data);
+//
+//        // Mostrar los datos recibidos en el Log
+//        Log.d(TAG, "Received data: " + hexString);
+//
+//
+//                resposteText.setText(hexString);
+//
+//
+//            resposteText.setText("HEX recibido: " + hexString);
         }
 
 
