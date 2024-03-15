@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 
@@ -39,6 +41,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private static final String EXPECTED_FIRST_RESPONSE = "550008860300E6AA";
     private static final String SEND_SETSAMPLE = "55000B0603000A000073AA";
     private static final String READ_FRAME = "5500090300000061AA";
+    private String OptionClicked; //Control de la opcion pulsada
 
 
     public AlignerFragment() {
@@ -132,7 +135,15 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         mButtonSample3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                OptionClicked = "setsample";
                 send(SEND_SETSAMPLE);
+            }
+        });
+        mButtonReadFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OptionClicked = "readFrame";
+                send(READ_FRAME);
             }
         });
 
@@ -145,15 +156,32 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         try {
             if (service != null) {
                 // Agregar el retorno de carro y nueva línea al final del mensaje en formato hexadecimal
-                message += "0D0A";
-
-                // Convertir el string hexadecimal a bytes
-                byte[] data = TextUtil.fromHexString(message);
-
-                // Enviar los datos al servicio serial
-                service.write(data);
-                Log.i(TAG, "Send data: " + Arrays.toString(data));
-                Log.i(TAG, "Send data: " + message);
+                final String modifiedMessage = message + "0D0A";
+            // Convertir el string hexadecimal a bytes
+                byte[] data = TextUtil.fromHexString(modifiedMessage);
+                switch (OptionClicked) {
+                    case "setsample":
+                        // Enviar los datos al servicio serial
+                        service.write(data);
+                        Log.i(TAG, "Send data SETSAMPLE (Array): " + Arrays.toString(data));
+                        Log.i(TAG, "Send data SETSAMPLE (Hex): " + message);
+                        break;
+                    case "readFrame":
+                        // Enviar los datos al servicio serial después de 2 segundos
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    service.write(data);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                Log.i(TAG, "Send data READFRAME (Array): " + Arrays.toString(data));
+                                Log.i(TAG, "Send data READFRAME (Hex): " + modifiedMessage);
+                            }
+                        }, 2000); // Retraso de 2 segundos
+                        break;
+                }
             } else {
                 Log.e(TAG, "SerialService is null, unable to write data");
             }
@@ -198,20 +226,37 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         receive(datas);
     }
 
-private void receive(ArrayDeque<byte[]> datas) {
+    private void receive(ArrayDeque<byte[]> datas) {
 
-    for (byte[] data : datas) {
-        // Convertir los datos a su representación hexadecimal
-        String hexString = TextUtil.toHexString(data);
-
-        // Mostrar los datos recibidos en el Log
-        Log.d(TAG, "Received data: " + hexString);
-
-                // Mostrar el resultado en el TextView
-
-                resposteText.setText("HEX: " + hexString);
-
+        for (byte[] data : datas) {
+            // Convertir los datos a su representación hexadecimal
+            String hexString = TextUtil.toHexString(data);
+            //mostrar resouesta segun opcion pulsada
+            switch (OptionClicked){
+                case "setsample":
+                    // Mostrar los datos recibidos en el Log
+                    Log.d(TAG, "Received data setSample: " + hexString);
+                    // Mostrar el resultado en el TextView
+                    resposteText.setText("HEX: " + hexString);
+                    break;
+                case("readFrame"):
+                    // Verificar que la cadena tenga al menos seis caracteres (tres bytes)
+                    if (hexString.length() >= 6) {
+                        // Extraer los bytes desde el cuarto byte hasta tres bytes antes del final
+                        String trimmedHexString = hexString.substring(6, hexString.length() - 6);
+                        // Mostrar los datos recibidos en el Log
+                        Log.d(TAG, "Received data readFrame: " + trimmedHexString);
+                        // Mostrar el resultado en el TextView
+                        textReadFrame.setText("HEX READ FRAME: " + trimmedHexString);
+                    } else {
+                        // Si la cadena es demasiado corta, mostrar un mensaje de error
+                        Log.e(TAG, "Received data is too short to trim.");
+                    }
+                    break;
             }
+
+
+        }
     }
 
     @Override
