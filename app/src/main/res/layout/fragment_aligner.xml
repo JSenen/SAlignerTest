@@ -34,25 +34,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Text Status"
+        android:text="Wait . . . "
+        android:textColor="@color/colorAccent"
         android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/textCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Text Code"
-        android:textColor="@color/colorSendText"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textReadFrame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="HEX R_frame"
-        android:textColor="@color/black_overlay"
-        android:textSize="24sp" />
+    <com.juansenen.salignertest.MatrixView
+        android:id="@+id/matrixView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

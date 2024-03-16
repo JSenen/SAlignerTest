@@ -29,9 +29,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
 
     private static final String TAG = "AlignerFragment";
     private enum Connected {False, Pending, True}
-
-    private TextView resposteText;
-    private TextView connectionStatus, textReadFrame;
+    private TextView connectionStatus;
     private Button mButtonSample3, mButtonReadFrame;
     private String deviceAddress;
     private SerialService service;
@@ -42,6 +40,10 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private static final String SEND_SETSAMPLE = "55000B0603000A000073AA";
     private static final String READ_FRAME = "5500090300000061AA";
     private String OptionClicked; //Control de la opcion pulsada
+    private MatrixView matrixView;
+    // Declarar una variable para almacenar la cadena hexadecimal recibida hasta que esté completa
+    private String receivedHexString = "";
+
 
 
     public AlignerFragment() {
@@ -125,11 +127,10 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
-        resposteText = alignerView.findViewById(R.id.textCode);
-        textReadFrame = alignerView.findViewById(R.id.textReadFrame);
         mButtonReadFrame = alignerView.findViewById(R.id.butReadFrame);
         mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
         connectionStatus = alignerView.findViewById(R.id.connectionStatus);
+        matrixView = alignerView.findViewById(R.id.matrixView);
 
 
         mButtonSample3.setOnClickListener(new View.OnClickListener() {
@@ -231,32 +232,58 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         for (byte[] data : datas) {
             // Convertir los datos a su representación hexadecimal
             String hexString = TextUtil.toHexString(data);
-            //mostrar resouesta segun opcion pulsada
+
+            // Concatenar el fragmento recibido al final de la cadena almacenada
+            receivedHexString += hexString;
+
+            //mostrar respuesta según opción pulsada
             switch (OptionClicked){
                 case "setsample":
                     // Mostrar los datos recibidos en el Log
                     Log.d(TAG, "Received data setSample: " + hexString);
-                    // Mostrar el resultado en el TextView
-                    resposteText.setText("HEX: " + hexString);
                     break;
-                case("readFrame"):
-                    // Verificar que la cadena tenga al menos seis caracteres (tres bytes)
-                    if (hexString.length() >= 6) {
-                        // Extraer los bytes desde el cuarto byte hasta tres bytes antes del final
-                        String trimmedHexString = hexString.substring(6, hexString.length() - 6);
-                        // Mostrar los datos recibidos en el Log
-                        Log.d(TAG, "Received data readFrame: " + trimmedHexString);
-                        // Mostrar el resultado en el TextView
-                        textReadFrame.setText("HEX READ FRAME: " + trimmedHexString);
-                    } else {
-                        // Si la cadena es demasiado corta, mostrar un mensaje de error
-                        Log.e(TAG, "Received data is too short to trim.");
+                case "readFrame":
+                    // Verificar si la cadena almacenada tiene suficientes caracteres para formar la matriz completa
+                    if (receivedHexString.length() >= 14 + 2 * 48 * 48 + 6) {
+                        Log.i(TAG,"Received HexString: "+ receivedHexString);
+
+                        // Eliminar los bytes innecesarios al principio y al final de la cadena
+                        String trimmedHexString = receivedHexString.substring(14, receivedHexString.length() - 6);
+
+                        // Convertir la cadena a una matriz de valores
+                        int[][] matrix = convertHexStringToMatrix(trimmedHexString);
+
+                        // Dibujar la matriz en la vista personalizada
+                        matrixView.setMatrix(matrix);
+
+                        // Limpiar la cadena almacenada para el próximo conjunto de datos
+                        receivedHexString = "";
                     }
                     break;
             }
-
-
         }
+    }
+    private int[][] convertHexStringToMatrix(String hexString) {
+        int[][] matrix = new int[48][48];
+        int hexIndex = 0;
+
+        for (int i = 0; i < 48; i++) {
+            for (int j = 0; j < 48; j++) {
+                // Extraer el byte correspondiente de la cadena hexadecimal y eliminar espacios en blanco
+                String byteString = hexString.substring(hexIndex, hexIndex + 2).trim();
+                Log.d(TAG, "Byte string: " + byteString); // Para depurar
+                try {
+                    int value = Integer.parseInt(byteString, 16);
+                    matrix[i][j] = value;
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing byte string: " + byteString);
+                    // Manejo de errores o información de depuración adicional si es necesario
+                }
+                hexIndex += 2;
+            }
+        }
+
+        return matrix;
     }
 
     @Override
