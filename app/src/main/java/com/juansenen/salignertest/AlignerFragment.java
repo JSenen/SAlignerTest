@@ -31,7 +31,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private static final String TAG = "AlignerFragment";
     private enum Connected {False, Pending, True}
     private TextView connectionStatus;
-    private Button mButtonSample3, mButtonReadFrame;
+    private Button mButtonSample3, mButtonReadFrame, mbutStopReading;
     private String deviceAddress;
     private SerialService service;
     private Connected connected = Connected.False;
@@ -44,6 +44,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private MatrixView matrixView;
     // Declarar una variable para almacenar la cadena hexadecimal recibida hasta que esté completa
     private String receivedHexString = "";
+    private boolean readingEnabled = false; // Variable para controlar la lectura continua
 
 
 
@@ -130,6 +131,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
         mButtonReadFrame = alignerView.findViewById(R.id.butReadFrame);
         mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
+        mbutStopReading = alignerView.findViewById(R.id.butStopReading);
         connectionStatus = alignerView.findViewById(R.id.connectionStatus);
         matrixView = alignerView.findViewById(R.id.matrixView);
 
@@ -145,12 +147,44 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
             @Override
             public void onClick(View v) {
                 OptionClicked = "readFrame";
-                send(READ_FRAME);
+                //send(READ_FRAME);
+                readingEnabled = true;
+                // Iniciar el proceso de lectura continua
+                startContinuousReading();
+            }
+        });
+        mbutStopReading.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Detener la lectura continua
+                stopContinuousReading();
             }
         });
 
 
         return alignerView;
+    }
+    private void startContinuousReading() {
+        // Crear un bucle para la lectura continua
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (readingEnabled) {
+                    // Enviar la solicitud de lectura
+                    send(READ_FRAME);
+                    try {
+                        // Esperar un tiempo antes de enviar la siguiente solicitud
+                        Thread.sleep(2000); // Intervalo de 2 segundos (ajusta según sea necesario)
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+    // Método para detener la lectura continua
+    private void stopContinuousReading() {
+        readingEnabled = false;
     }
 
 
@@ -230,6 +264,9 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
 
     private void receive(ArrayDeque<byte[]> datas) {
 
+        // Borrar la cadena antes de recibir nuevos datos
+        receivedHexString = "";
+
         for (byte[] data : datas) {
             // Convertir los datos a su representación hexadecimal
             String hexString = TextUtil.toHexString(data);
@@ -268,7 +305,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
             }
         }
     }
-//    // Método para modificar algunos pares hexadecimales por números aleatorios
+    // Método para modificar algunos pares hexadecimales por números aleatorios
 //    private void modifyHexPairs(int[][] matrix) {
 //        Random random = new Random();
 //        for (int i = 0; i < matrix.length; i++) {

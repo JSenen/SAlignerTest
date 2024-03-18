@@ -30,14 +30,26 @@ public class MatrixView extends View {
     }
 
     // Método para obtener un color en función de un valor en la escala de 1 a 100
+//    private int getColorForValue(int value) {
+//        if (value <= 10) {
+//            // Escala los valores bajos a colores hueso o grisáceo
+//            float brightness = 0.5f + (value / 20.0f); // Ajusta este factor según tus preferencias
+//            return Color.HSVToColor(new float[]{0f, 0f, brightness});
+//        } else {
+//            // Escala los valores restantes a colores más intensos como el rojo
+//            float hue = (value - 10) * 1.2f; // Ajusta este factor según tus preferencias
+//            return Color.HSVToColor(new float[]{hue, 1f, 1f});
+//        }
+//    }
+    // Método para obtener un color en función de un valor en la escala de 0 a 255
     private int getColorForValue(int value) {
-        if (value <= 10) {
+        if (value <= 127) {
             // Escala los valores bajos a colores hueso o grisáceo
-            float brightness = 0.5f + (value / 20.0f); // Ajusta este factor según tus preferencias
+            float brightness = 0.5f + (value / 510.0f); // Escala el valor entre 0.5 y 1
             return Color.HSVToColor(new float[]{0f, 0f, brightness});
         } else {
             // Escala los valores restantes a colores más intensos como el rojo
-            float hue = (value - 10) * 1.2f; // Ajusta este factor según tus preferencias
+            float hue = (value - 127) * 1.2f; // Ajusta este factor según tus preferencias
             return Color.HSVToColor(new float[]{hue, 1f, 1f});
         }
     }
