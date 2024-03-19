@@ -165,7 +165,6 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                     case "setsample":
                         // Enviar los datos al servicio serial
                         service.write(data);
-                        Log.i(TAG, "Send data SETSAMPLE (Array): " + Arrays.toString(data));
                         Log.i(TAG, "Send data SETSAMPLE (Hex): " + message);
                         break;
                     case "readFrame":
@@ -178,10 +177,9 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
-                                Log.i(TAG, "Send data READFRAME (Array): " + Arrays.toString(data));
                                 Log.i(TAG, "Send data READFRAME (Hex): " + modifiedMessage);
                             }
-                        }, 2000); // Retraso de 2 segundos
+                        }, 1000); // Retraso de 2 segundos
                         break;
                 }
             } else {
@@ -299,7 +297,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                 hexIndex += 2;
             }
         }
-
+        Log.d(TAG,"HEx string for matrix: "+ hexString);
         return matrix;
     }
 
