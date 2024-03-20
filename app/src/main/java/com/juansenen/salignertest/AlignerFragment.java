@@ -31,15 +31,16 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private static final String TAG = "AlignerFragment";
     private enum Connected {False, Pending, True}
     private TextView connectionStatus;
-    private Button mButtonSample3, mButtonReadFrame;
+    private Button mButtonSample3, mButtonReadFrame, mButtonStopSample;
     private String deviceAddress;
     private SerialService service;
     private Connected connected = Connected.False;
     private boolean waitForFirstResponse = true;
     //TODO: Clean variables dont use
-    private static final String EXPECTED_FIRST_RESPONSE = "550008860300E6AA";
-    private static final String SEND_SETSAMPLE = "55000B0603000A000073AA";
-    private static final String READ_FRAME = "5500090300000061AA";
+    private static final String EXPECTED_FIRST_RESPONSE = "550008860D00F0AA";
+    private static final String SEND_SETSAMPLE = "55000B06010000010068AA"; //55000B06010000010068AA
+    private static final String READ_FRAME = "5500090304000065AA"; //5500090304000065AA
+    private static final String STOP_SAMPLE = "550007070063AA";
     private String OptionClicked; //Control de la opcion pulsada
     private MatrixView matrixView;
     // Declarar una variable para almacenar la cadena hexadecimal recibida hasta que esté completa
@@ -130,6 +131,8 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
         mButtonReadFrame = alignerView.findViewById(R.id.butReadFrame);
         mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
+
+
         connectionStatus = alignerView.findViewById(R.id.connectionStatus);
         matrixView = alignerView.findViewById(R.id.matrixView);
 
@@ -146,9 +149,9 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
             public void onClick(View v) {
                 OptionClicked = "readFrame";
                 send(READ_FRAME);
+
             }
         });
-
 
         return alignerView;
     }
@@ -179,7 +182,12 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                                 }
                                 Log.i(TAG, "Send data READFRAME (Hex): " + modifiedMessage);
                             }
-                        }, 1000); // Retraso de 2 segundos
+                        }, 500); // Retraso de 1/2 s
+
+                        break;
+                    case "stopSample":
+                        service.write(data);
+                        Log.i(TAG, "Send data STOP SAMPLE (Hex): " + message);
                         break;
                 }
             } else {
@@ -227,44 +235,57 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     }
 
     private void receive(ArrayDeque<byte[]> datas) {
-
+        String hexString = "";
         for (byte[] data : datas) {
             // Convertir los datos a su representación hexadecimal
-            String hexString = TextUtil.toHexString(data);
+            hexString = TextUtil.toHexString(data);
 
             // Concatenar el fragmento recibido al final de la cadena almacenada
             receivedHexString += hexString;
 
-            //mostrar respuesta según opción pulsada
-            switch (OptionClicked){
-                case "setsample":
-                    // Mostrar los datos recibidos en el Log
-                    Log.d(TAG, "Received data setSample: " + hexString);
-                    break;
-                case "readFrame":
-                    // Verificar si la cadena almacenada tiene suficientes caracteres para formar la matriz completa
-                    if (receivedHexString.length() >= 14 + 2 * 48 * 48 + 6) {
 
-
-                        // Eliminar los bytes innecesarios al principio y al final de la cadena
-                        String trimmedHexString = receivedHexString.substring(14, receivedHexString.length() - 6);
-                        Log.i(TAG,"Received trimmedHexString: "+ trimmedHexString);
-                        //trimmedHexString = "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0";
-                        // Convertir la cadena a una matriz de valores
-                        int[][] matrix = convertHexStringToMatrix(trimmedHexString);
-
-                        //TODO Modifciacion para ruebas DELETE en produccion
-                        // Modificar algunos pares hexadecimales por números aleatorios
-                        //modifyHexPairs(matrix);
-                        // Dibujar la matriz en la vista personalizada
-                        matrixView.setMatrix(matrix);
-
-                        // Limpiar la cadena almacenada para el próximo conjunto de datos
-                        receivedHexString = "";
-                    }
-                    break;
-            }
         }
+        //mostrar respuesta según opción pulsada
+        switch (OptionClicked){
+            case "setsample":
+                // Mostrar los datos recibidos en el Log
+                Log.d(TAG, "Received data setSample: " + hexString);
+
+                break;
+            case "readFrame":
+//                // Verificar si la cadena almacenada tiene suficientes caracteres para formar la matriz completa
+//                if (receivedHexString.length() >= 14 + 2 * 48 * 48 + 6) {
+//
+//
+//                    // Eliminar los bytes innecesarios al principio y al final de la cadena
+//                    String trimmedHexString = receivedHexString.substring(14, receivedHexString.length() - 6);
+//                    Log.i(TAG,"Received trimmedHexString: "+ trimmedHexString);
+//                    // Convertir la cadena a una matriz de valores
+//                    int[][] matrix = convertHexStringToMatrix(trimmedHexString);
+//
+//                    //TODO Modifciacion para ruebas DELETE en produccion
+//                    // Modificar algunos pares hexadecimales por números aleatorios
+//                    //modifyHexPairs(matrix);
+//                    // Dibujar la matriz en la vista personalizada
+//                    matrixView.setMatrix(matrix);
+//
+//                    // Limpiar la cadena almacenada para el próximo conjunto de datos
+//                    receivedHexString ="";
+//
+//                }
+
+                // Convertir la cadena a una matriz de valores
+                int[][] matrix = convertHexStringToMatrix(receivedHexString);
+
+                // Dibujar la matriz en la vista personalizada
+                matrixView.setMatrix(matrix);
+
+                // Limpiar la cadena almacenada para el próximo conjunto de datos
+                receivedHexString = "";
+
+                break;
+        }
+
     }
 //    // Método para modificar algunos pares hexadecimales por números aleatorios
 //    private void modifyHexPairs(int[][] matrix) {
@@ -278,14 +299,40 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
 //            }
 //        }
 //    }
-    private int[][] convertHexStringToMatrix(String hexString) {
-        int[][] matrix = new int[48][48];
-        int hexIndex = 0;
+//    private int[][] convertHexStringToMatrix(String hexString) {
+//        int[][] matrix = new int[48][48];
+//        int hexIndex = 0;
+//
+//        for (int i = 0; i < 48; i++) {
+//            for (int j = 0; j < 48; j++) {
+//                // Extraer el byte correspondiente de la cadena hexadecimal y eliminar espacios en blanco
+//                String byteString = hexString.substring(hexIndex, hexIndex + 2).trim();
+//                //Log.d(TAG, "Byte string: " + byteString); // Para depurar
+//                try {
+//                    int value = Integer.parseInt(byteString, 16);
+//                    matrix[i][j] = value;
+//                } catch (NumberFormatException e) {
+//                    Log.e(TAG, "Error parsing byte string: " + byteString);
+//                    // Manejo de errores o información de depuración adicional si es necesario
+//                }
+//                hexIndex += 2;
+//            }
+//        }
+//        Log.d(TAG,"HEx string for matrix: "+ hexString);
+//        return matrix;
+//    }
+private int[][] convertHexStringToMatrix(String hexString) {
+    // Calcular el tamaño de la matriz en función de la longitud de la cadena
+    int matrixSize = (int) Math.ceil(Math.sqrt(hexString.length() / 2.0));
+    int[][] matrix = new int[matrixSize][matrixSize];
+    int hexIndex = 0;
 
-        for (int i = 0; i < 48; i++) {
-            for (int j = 0; j < 48; j++) {
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            // Verificar si quedan caracteres suficientes en la cadena
+            if (hexIndex < hexString.length()) {
                 // Extraer el byte correspondiente de la cadena hexadecimal y eliminar espacios en blanco
-                String byteString = hexString.substring(hexIndex, hexIndex + 2).trim();
+                String byteString = hexString.substring(hexIndex, Math.min(hexIndex + 2, hexString.length())).trim();
                 //Log.d(TAG, "Byte string: " + byteString); // Para depurar
                 try {
                     int value = Integer.parseInt(byteString, 16);
@@ -295,11 +342,15 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                     // Manejo de errores o información de depuración adicional si es necesario
                 }
                 hexIndex += 2;
+            } else {
+                // Si no quedan más caracteres en la cadena, salir del bucle
+                break;
             }
         }
-        Log.d(TAG,"HEx string for matrix: "+ hexString);
-        return matrix;
     }
+    Log.d(TAG,"Hex string for matrix: "+ hexString);
+    return matrix;
+}
 
     @Override
     public void onSerialIoError(Exception e) {

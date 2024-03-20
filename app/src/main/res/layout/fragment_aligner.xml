@@ -41,6 +41,7 @@
     <com.juansenen.salignertest.MatrixView
         android:id="@+id/matrixView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
 </LinearLayout>

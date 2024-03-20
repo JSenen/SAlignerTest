@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 
 public class MatrixView extends View {
     private int[][] matrix; // La matriz de datos
-    private int cellSize = 15; // Tamaño de cada celda en píxeles
+    private int cellSize = 25; // Tamaño de cada celda en píxeles
 
     public MatrixView(Context context) {
         super(context);
@@ -31,7 +31,7 @@ public class MatrixView extends View {
 
     // Método para obtener un color en función de un valor en la escala de 1 a 100
     private int getColorForValue(int value) {
-        if (value <= 10) {
+        if (value <= 50) {
             // Escala los valores bajos a colores hueso o grisáceo
             float brightness = 0.5f + (value / 20.0f); // Ajusta este factor según tus preferencias
             return Color.HSVToColor(new float[]{0f, 0f, brightness});
