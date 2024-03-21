@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 
 public class MatrixView extends View {
     private int[][] matrix; // La matriz de datos
-    private int cellSize = 25; // Tamaño de cada celda en píxeles
+    private int cellSize = 10; // Tamaño de cada celda en píxeles
 
     public MatrixView(Context context) {
         super(context);

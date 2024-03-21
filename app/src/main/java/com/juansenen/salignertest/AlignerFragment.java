@@ -250,6 +250,8 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
             case "setsample":
                 // Mostrar los datos recibidos en el Log
                 Log.d(TAG, "Received data setSample: " + hexString);
+                // Limpiar la cadena almacenada para el próximo conjunto de datos
+                receivedHexString = "";
 
                 break;
             case "readFrame":
@@ -280,11 +282,10 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                 // Dibujar la matriz en la vista personalizada
                 matrixView.setMatrix(matrix);
 
-                // Limpiar la cadena almacenada para el próximo conjunto de datos
-                receivedHexString = "";
 
                 break;
         }
+
 
     }
 //    // Método para modificar algunos pares hexadecimales por números aleatorios
