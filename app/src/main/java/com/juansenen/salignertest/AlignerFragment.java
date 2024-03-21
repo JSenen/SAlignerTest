@@ -45,6 +45,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private MatrixView matrixView;
     // Declarar una variable para almacenar la cadena hexadecimal recibida hasta que esté completa
     private String receivedHexString = "";
+    private boolean isFirstResponse = true;
 
 
 
@@ -226,6 +227,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         receive(datas);
     }
 
+
     private void receive(ArrayDeque<byte[]> datas) {
         // Inicializa la cadena hexadecimal recibida
         StringBuilder receivedHexString = new StringBuilder();
@@ -243,12 +245,22 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                 break;
 
             case "readFrame":
+                // Elimina los primeros 14 caracteres de la primera respuesta
+                String hexString = receivedHexString.toString();
+                if (isFirstResponse && !datas.isEmpty()) {
+                    Log.d(TAG, "isFirstResponse: " + isFirstResponse);
+                    hexString = hexString.substring(14);
+                    isFirstResponse = false; // Ya no es la primera respuesta
+                }
+                // Elimina los últimos 6 caracteres de la última respuesta
+                if (datas.size() == 1) {
+                    hexString = hexString.substring(0, hexString.length() - 6);
+                }
                 // Convierte la cadena hexadecimal en matrices de valores y dibuja las matrices
-                drawMatricesFromHexString(receivedHexString.toString());
+                drawMatricesFromHexString(hexString);
                 break;
         }
     }
-
     private void drawMatricesFromHexString(String hexString) {
         // Calcula el tamaño de cada matriz individual (48x48)
         int matrixSize = 48;
@@ -305,17 +317,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
         Log.d(TAG, "Hex string for matrix: " + hexString);
         return matrix;
     }
-    private int getColorForValue(int value) {
-        if (value <= 50) {
-            // Escala los valores bajos a colores hueso o grisáceo
-            float brightness = 0.5f + (value / 50.0f); // Ajusta este factor según tus preferencias
-            return Color.HSVToColor(new float[]{0f, 0f, brightness});
-        } else {
-            // Escala los valores restantes a colores más intensos como el rojo
-            float hue = (value - 50) * 1.2f; // Ajusta este factor según tus preferencias
-            return Color.HSVToColor(new float[]{hue, 1f, 1f});
-        }
-    }
+
 
     @Override
     public void onSerialIoError(Exception e) {
