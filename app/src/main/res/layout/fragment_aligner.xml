@@ -27,6 +27,13 @@
             android:layout_height="wrap_content"
             android:text="Read Frame" />
 
+        <Button
+            android:id="@+id/butReadContinius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Button" />
+
     </LinearLayout>
 
     <TextView

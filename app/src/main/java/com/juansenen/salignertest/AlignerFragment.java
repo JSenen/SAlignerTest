@@ -31,7 +31,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
     private static final String TAG = "AlignerFragment";
     private enum Connected {False, Pending, True}
     private TextView connectionStatus;
-    private Button mButtonSample3, mButtonReadFrame, mButtonStopSample;
+    private Button mButtonSample3, mButtonReadFrame, mbutReadContinius;
     private String deviceAddress;
     private SerialService service;
     private Connected connected = Connected.False;
@@ -131,6 +131,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                              Bundle savedInstanceState) {
         View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
         mButtonReadFrame = alignerView.findViewById(R.id.butReadFrame);
+        mbutReadContinius = alignerView.findViewById(R.id.butReadContinius);
         mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
 
 
@@ -155,11 +156,53 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
 
             }
         });
+        mbutReadContinius.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OptionClicked = "readContinuous";
+                sendSetSample(); // Aquí debería enviar el SETSAMPLE
+                // Limpiar la vista de la matriz
+                //matrixView.clearMatrices();
+            }
+        });
 
         return alignerView;
     }
+    private void sendSetSample() {
+        OptionClicked = "setsample";
+        send(SEND_SETSAMPLE);
+    }
+
+    private void sendReadFrame() {
+        OptionClicked = "readFrame";
+        send(READ_FRAME);
+    }
 
 
+    private void processSetSampleResponse() {
+        Log.d(TAG, "Received data setSample: " + receivedHexString.toString());
+        // Después de recibir SETSAMPLE, enviar READFRAME después de 1 segundo
+        sendReadFrameWithDelay();
+    }
+    private void sendReadFrameWithDelay() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                send(READ_FRAME);
+            }
+        }, 1000); // Espera 1 segundo antes de enviar READFRAME
+    }
+    private void sendSetSampleWithDelay() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Limpiar la vista de la matriz antes de enviar SETSAMPLE
+                matrixView.clearMatrices();
+                // Enviar SETSAMPLE después de limpiar la vista
+                sendSetSample();
+            }
+        }, 4000); // Espera 4 segundos antes de enviar SETSAMPLE nuevamente
+    }
     private void send(String message) {
         try {
             if (service != null) {
@@ -242,6 +285,8 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
             case "setsample":
                 // Muestra los datos recibidos en el Log
                 Log.d(TAG, "Received data setSample: " + receivedHexString.toString());
+                // Después de recibir SETSAMPLE, enviar READFRAME inmediatamente
+                sendReadFrame();
                 break;
 
             case "readFrame":
@@ -258,8 +303,30 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                 }
                 // Convierte la cadena hexadecimal en matrices de valores y dibuja las matrices
                 drawMatricesFromHexString(hexString);
+                // Después de recibir y procesar READFRAME, enviar SETSAMPLE nuevamente después de 4 segundos
+                sendSetSampleWithDelay();
+                break;
+
+            case "readContinuous":
+                // Procesa los datos continuos
+                processContinuousData(receivedHexString.toString());
                 break;
         }
+    }
+
+    private void processContinuousData(String continuousData) {
+        // Elimina los primeros 14 caracteres de la primera respuesta
+        String hexString = continuousData;
+        if (isFirstResponse) {
+            Log.d(TAG, "isFirstResponse: " + isFirstResponse);
+            hexString = hexString.substring(14);
+            isFirstResponse = false; // Ya no es la primera respuesta
+        }
+        // Elimina los últimos 6 caracteres de la última respuesta
+        hexString = hexString.substring(0, hexString.length() - 6);
+
+        // Convierte la cadena hexadecimal en matrices de valores y dibuja las matrices
+        drawMatricesFromHexString(hexString);
     }
     private void drawMatricesFromHexString(String hexString) {
         // Calcula el tamaño de cada matriz individual (48x48)
