@@ -131,7 +131,6 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                              Bundle savedInstanceState) {
         View alignerView = inflater.inflate(R.layout.fragment_aligner, container, false);
         mButtonReadFrame = alignerView.findViewById(R.id.butReadFrame);
-        mbutReadContinius = alignerView.findViewById(R.id.butReadContinius);
         mButtonSample3 = alignerView.findViewById(R.id.ButSample3);
 
 
@@ -156,15 +155,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
 
             }
         });
-        mbutReadContinius.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OptionClicked = "readContinuous";
-                sendSetSample(); // Aquí debería enviar el SETSAMPLE
-                // Limpiar la vista de la matriz
-                //matrixView.clearMatrices();
-            }
-        });
+
 
         return alignerView;
     }
@@ -217,7 +208,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                         Log.i(TAG, "Send data SETSAMPLE (Hex): " + message);
                         break;
                     case "readFrame":
-                        // Enviar los datos al servicio serial después de 2 segundos
+                        // Enviar los datos al servicio serial después de 1 segundos
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -228,7 +219,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                                 }
                                 Log.i(TAG, "Send data READFRAME (Hex): " + modifiedMessage);
                             }
-                        }, 500); // Retraso de 1/2 s
+                        }, 1000); // Retraso de 1/2 s
 
                         break;
                     case "stopSample":
@@ -286,7 +277,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                 // Muestra los datos recibidos en el Log
                 Log.d(TAG, "Received data setSample: " + receivedHexString.toString());
                 // Después de recibir SETSAMPLE, enviar READFRAME inmediatamente
-                sendReadFrame();
+                //sendReadFrame();
                 break;
 
             case "readFrame":
@@ -304,12 +295,12 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                 // Convierte la cadena hexadecimal en matrices de valores y dibuja las matrices
                 drawMatricesFromHexString(hexString);
                 // Después de recibir y procesar READFRAME, enviar SETSAMPLE nuevamente después de 4 segundos
-                sendSetSampleWithDelay();
+                //sendSetSampleWithDelay();
                 break;
 
             case "readContinuous":
                 // Procesa los datos continuos
-                processContinuousData(receivedHexString.toString());
+                //processContinuousData(receivedHexString.toString());
                 break;
         }
     }
