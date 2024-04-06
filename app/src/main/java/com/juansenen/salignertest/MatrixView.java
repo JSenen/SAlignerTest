@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class MatrixView extends View {
     private ArrayList<int[][]> matrices;
-    private int cellSize = 10;
+    private int cellSize = 15;
     private int verticalSpacing = 5;
     private ArrayList<ArrayList<Point>> cellCoordinates;
     public MatrixView(Context context) {
@@ -107,13 +107,13 @@ public class MatrixView extends View {
     }
 
     private int getColorForValue(int value) {
-        if (value <= 50) {
-            // Escala los valores bajos a colores hueso o grisáceo
-            float brightness = 0.5f + (value / 20.0f); // Ajusta este factor según tus preferencias
+        if (value <= 255) {
+            // Escala los valores bajos a colores oscuros casi negros
+            float brightness = value / 255.0f; // Se asume que los valores van de 0 a 255
             return Color.HSVToColor(new float[]{0f, 0f, brightness});
         } else {
-            // Escala los valores restantes a colores más intensos como el rojo
-            float hue = (value - 10) * 1.2f; // Ajusta este factor según tus preferencias
+            // Escala los valores restantes a tonos de azul más intenso
+            float hue = 240f - (value - 255);
             return Color.HSVToColor(new float[]{hue, 1f, 1f});
         }
     }
