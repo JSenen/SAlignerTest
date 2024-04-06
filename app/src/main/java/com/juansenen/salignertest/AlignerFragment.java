@@ -192,7 +192,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                             Log.w(TAG, "La longitud de la cadena no es suficiente para eliminar los caracteres");
                         }
                     }
-                }, 3000); // 3000 milisegundos = 3 segundos
+                }, 2000); // 2000 milisegundos = 2 segundos
             }
         });
         return alignerView;
@@ -279,6 +279,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
             // Actualizar el recuento total de bytes recibidos
             totalReceivedBytes += data.length;
             Log.i(TAG,"Cadena RECEIVE HEX " + hexString);
+            Log.i(TAG,"Bytes recibidos " + totalReceivedBytes);
         }
 
         // Verificar la opción pulsada y procesar la cadena según corresponda
@@ -330,6 +331,7 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                     matrix[row][col] = value;
                     // Mover al siguiente índice de columna
                     col++;
+                    Log.i(TAG,"Valor fila  " + row + "= "+firstValue+" Valor Columna " + col + "= "+secondValue+"Valor obtenido " + value);
                     // Verificar si llegamos al final de la fila
                     if (col >= matrixSize) {
                         // Mover a la siguiente fila

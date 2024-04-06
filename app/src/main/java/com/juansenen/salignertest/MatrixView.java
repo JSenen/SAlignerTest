@@ -1,6 +1,7 @@
 package com.juansenen.salignertest;
 
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,6 +16,7 @@ public class MatrixView extends View {
     private int cellSize = 15;
     private int verticalSpacing = 5;
     private ArrayList<ArrayList<Point>> cellCoordinates;
+    private static final String TAG = "AlignerFragment";
     public MatrixView(Context context) {
         super(context);
         matrices = new ArrayList<>();
@@ -90,6 +92,7 @@ public class MatrixView extends View {
                     paint.setColor(color);
                     canvas.drawRect(currentX + j * cellSize, currentY + i * cellSize,
                             currentX + j * cellSize + cellSize, currentY + i * cellSize + cellSize, paint);
+                   // Log.i(TAG,"Punto Fila " + i + "Columna " + j + "Valor color " + color);
                 }
             }
 
@@ -97,12 +100,12 @@ public class MatrixView extends View {
             currentX += matrix[0].length * cellSize;
 
             // Verifica si se han dibujado tres matrices en la fila actual
-            matricesDrawnInRow++;
-            if (matricesDrawnInRow == 3) {
-                currentX = 0;
-                currentY += matrix.length * cellSize + verticalSpacing;
-                matricesDrawnInRow = 0;
-            }
+//            matricesDrawnInRow++;
+//            if (matricesDrawnInRow == 3) {
+//                currentX = 0;
+//                currentY += matrix.length * cellSize + verticalSpacing;
+//                matricesDrawnInRow = 0;
+//            }
         }
     }
 
