@@ -22,10 +22,31 @@
             android:text="Sample" />
 
         <Button
-            android:id="@+id/butReadFrame"
+            android:id="@+id/ButPrev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Read Frame" />
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="Previous" />
+
+        <TextView
+            android:id="@+id/FrameTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:text="0"
+            android:textColor="@color/colorAccent"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/ButNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|right"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="Next" />
 
     </LinearLayout>
 
