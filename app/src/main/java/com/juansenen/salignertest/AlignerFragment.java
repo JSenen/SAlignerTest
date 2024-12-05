@@ -297,99 +297,99 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                                                             combinedHexString.setLength(0);
                                                             totalReceivedBytes = 0;
 
-                                                            Log.i(TAG, "Enviar READ_FRAME1");
-                                                            send(READ_FRAME1);
+                                                            //Log.i(TAG, "Enviar READ_FRAME1");
+                                                            //send(READ_FRAME1);
 
                                                             // Usa un Handler para leer respuesta a READ_FRAME1 y enviar READ_FRAME2 después de 200 ms
-                                                            new Handler().postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run()
-                                                                {
-                                                                    // Comprobar respuesta a READ_FRAME1
-                                                                    String fullHexString = combinedHexString.toString().replaceAll("\\s+", "");
-                                                                    Log.i(TAG, "Respuesta a read frame 1 = " +fullHexString.length() +" " + fullHexString);
-
-                                                                    // Verificar si la longitud de la cadena es suficiente para contener la respuesta esperada
-                                                                    if (fullHexString.length() >= 9238)
-                                                                    {
-                                                                        // Eliminar los 16 primeros caracteres y los 6 últimos
-                                                                        fullHexString = fullHexString.substring(16, fullHexString.length() - 6);
-                                                                        Log.i(TAG, "Matriz frame 1 = " +fullHexString.length() +" " + fullHexString);
-                                                                        strFrame1 = String.copyValueOf(fullHexString.toCharArray());
-                                                                        MaxSamples++;
-                                                                        mButtonNext.setEnabled(true);
-
-                                                                        // Limpiar la cadena combinada para la próxima lectura
-                                                                        combinedHexString.setLength(0);
-                                                                        totalReceivedBytes = 0;
-
-                                                                        Log.i(TAG, "Enviar READ_FRAME2");
-                                                                        send(READ_FRAME2);
+//                                                            new Handler().postDelayed(new Runnable() {
+//                                                                @Override
+//                                                                public void run()
+//                                                                {
+//                                                                    // Comprobar respuesta a READ_FRAME1
+//                                                                    String fullHexString = combinedHexString.toString().replaceAll("\\s+", "");
+//                                                                    Log.i(TAG, "Respuesta a read frame 1 = " +fullHexString.length() +" " + fullHexString);
+//
+//                                                                    // Verificar si la longitud de la cadena es suficiente para contener la respuesta esperada
+//                                                                    if (fullHexString.length() >= 9238)
+//                                                                    {
+//                                                                        // Eliminar los 16 primeros caracteres y los 6 últimos
+//                                                                        fullHexString = fullHexString.substring(16, fullHexString.length() - 6);
+//                                                                        Log.i(TAG, "Matriz frame 1 = " +fullHexString.length() +" " + fullHexString);
+//                                                                        strFrame1 = String.copyValueOf(fullHexString.toCharArray());
+//                                                                        MaxSamples++;
+//                                                                        mButtonNext.setEnabled(true);
+//
+//                                                                        // Limpiar la cadena combinada para la próxima lectura
+//                                                                        combinedHexString.setLength(0);
+//                                                                        totalReceivedBytes = 0;
+//
+//                                                                        Log.i(TAG, "Enviar READ_FRAME2");
+//                                                                        send(READ_FRAME2);
 
                                                                         // Usa un Handler para leer respuesta a READ_FRAME2 y enviar READ_FRAME3 después de 200 ms
-                                                                        new Handler().postDelayed(new Runnable() {
-                                                                            @Override
-                                                                            public void run()
-                                                                            {
-                                                                                // Comprobar respuesta a READ_FRAME2
-                                                                                String fullHexString = combinedHexString.toString().replaceAll("\\s+", "");
-                                                                                Log.i(TAG, "Respuesta a read frame 2 = " +fullHexString.length() +" " + fullHexString);
-
-                                                                                // Verificar si la longitud de la cadena es suficiente para contener la respuesta esperada
-                                                                                if (fullHexString.length() >= 9238)
-                                                                                {
-                                                                                    // Eliminar los 16 primeros caracteres y los 6 últimos
-                                                                                    fullHexString = fullHexString.substring(16, fullHexString.length() - 6);
-                                                                                    Log.i(TAG, "Matriz frame 2 = " +fullHexString.length() +" " + fullHexString);
-                                                                                    strFrame2 = String.copyValueOf(fullHexString.toCharArray());
-                                                                                    MaxSamples++;
-
-                                                                                    // Limpiar la cadena combinada para la próxima lectura
-                                                                                    combinedHexString.setLength(0);
-                                                                                    totalReceivedBytes = 0;
-
-                                                                                    Log.i(TAG, "Enviar READ_FRAME3");
-                                                                                    send(READ_FRAME3);
-
-                                                                                    // Usa un Handler para leer respuesta a READ_FRAME3 después de 200 ms
-                                                                                    new Handler().postDelayed(new Runnable() {
-                                                                                        @Override
-                                                                                        public void run()
-                                                                                        {
-                                                                                            // Comprobar respuesta a READ_FRAME3
-                                                                                            String fullHexString = combinedHexString.toString().replaceAll("\\s+", "");
-                                                                                            Log.i(TAG, "Respuesta a read frame 3 = " +fullHexString.length() +" " + fullHexString);
-
-                                                                                            // Verificar si la longitud de la cadena es suficiente para contener la respuesta esperada
-                                                                                            if (fullHexString.length() >= 9238)
-                                                                                            {
-                                                                                                // Eliminar los 16 primeros caracteres y los 6 últimos
-                                                                                                fullHexString = fullHexString.substring(16, fullHexString.length() - 6);
-                                                                                                Log.i(TAG, "Matriz frame 3 = " +fullHexString.length() +" " + fullHexString);
-                                                                                                strFrame3 = String.copyValueOf(fullHexString.toCharArray());
-                                                                                                MaxSamples++;
-
-                                                                                                // Limpiar la cadena combinada para la próxima lectura
-                                                                                                combinedHexString.setLength(0);
-                                                                                                totalReceivedBytes = 0;
-                                                                                            }
-                                                                                           mButtonSample3.setEnabled(true);
-                                                                                        }
-                                                                                    }, 2000); // Retardo de 200 ms
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    mButtonSample3.setEnabled(true);
-                                                                                }
-                                                                            }
-                                                                        }, 2000); // Retardo de 200 ms
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        mButtonSample3.setEnabled(true);
-                                                                    }
-                                                                }
-                                                            }, 2000); // Retardo de 200 ms
+//                                                                        new Handler().postDelayed(new Runnable() {
+//                                                                            @Override
+//                                                                            public void run()
+//                                                                            {
+//                                                                                // Comprobar respuesta a READ_FRAME2
+//                                                                                String fullHexString = combinedHexString.toString().replaceAll("\\s+", "");
+//                                                                                Log.i(TAG, "Respuesta a read frame 2 = " +fullHexString.length() +" " + fullHexString);
+//
+//                                                                                // Verificar si la longitud de la cadena es suficiente para contener la respuesta esperada
+//                                                                                if (fullHexString.length() >= 9238)
+//                                                                                {
+//                                                                                    // Eliminar los 16 primeros caracteres y los 6 últimos
+//                                                                                    fullHexString = fullHexString.substring(16, fullHexString.length() - 6);
+//                                                                                    Log.i(TAG, "Matriz frame 2 = " +fullHexString.length() +" " + fullHexString);
+//                                                                                    strFrame2 = String.copyValueOf(fullHexString.toCharArray());
+//                                                                                    MaxSamples++;
+//
+//                                                                                    // Limpiar la cadena combinada para la próxima lectura
+//                                                                                    combinedHexString.setLength(0);
+//                                                                                    totalReceivedBytes = 0;
+//
+//                                                                                    Log.i(TAG, "Enviar READ_FRAME3");
+//                                                                                    send(READ_FRAME3);
+//
+//                                                                                    // Usa un Handler para leer respuesta a READ_FRAME3 después de 200 ms
+//                                                                                    new Handler().postDelayed(new Runnable() {
+//                                                                                        @Override
+//                                                                                        public void run()
+//                                                                                        {
+//                                                                                            // Comprobar respuesta a READ_FRAME3
+//                                                                                            String fullHexString = combinedHexString.toString().replaceAll("\\s+", "");
+//                                                                                            Log.i(TAG, "Respuesta a read frame 3 = " +fullHexString.length() +" " + fullHexString);
+//
+//                                                                                            // Verificar si la longitud de la cadena es suficiente para contener la respuesta esperada
+//                                                                                            if (fullHexString.length() >= 9238)
+//                                                                                            {
+//                                                                                                // Eliminar los 16 primeros caracteres y los 6 últimos
+//                                                                                                fullHexString = fullHexString.substring(16, fullHexString.length() - 6);
+//                                                                                                Log.i(TAG, "Matriz frame 3 = " +fullHexString.length() +" " + fullHexString);
+//                                                                                                strFrame3 = String.copyValueOf(fullHexString.toCharArray());
+//                                                                                                MaxSamples++;
+//
+//                                                                                                // Limpiar la cadena combinada para la próxima lectura
+//                                                                                                combinedHexString.setLength(0);
+//                                                                                                totalReceivedBytes = 0;
+//                                                                                            }
+//                                                                                           mButtonSample3.setEnabled(true);
+//                                                                                        }
+//                                                                                    }, 2000); // Retardo de 200 ms
+//                                                                                }
+//                                                                                else
+//                                                                                {
+//                                                                                    mButtonSample3.setEnabled(true);
+//                                                                                }
+//                                                                            }
+//                                                                        }, 2000); // Retardo de 200 ms
+//                                                                    }
+//                                                                    else
+//                                                                    {
+//                                                                        mButtonSample3.setEnabled(true);
+//                                                                    }
+//                                                                }
+//                                                            }, 2000); // Retardo de 200 ms
                                                         }
                                                         else
                                                         {

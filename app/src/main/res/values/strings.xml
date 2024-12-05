@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SecretAligner_TEST</string>
+    <string name="app_name">SAligner_V1FRAME_3D</string>
     <string name="devices">Devices</string>
 
     <string name="bluetooth_permission_title">Bluetooth permission</string>
