@@ -59,10 +59,10 @@
         android:textColor="@color/colorAccent"
         android:textSize="20sp" />
 
-    <com.juansenen.salignertest.MatrixView
-        android:id="@+id/matrixView"
+    <FrameLayout
+        android:id="@+id/matrixContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_height="match_parent" />
+
 
 </LinearLayout>
