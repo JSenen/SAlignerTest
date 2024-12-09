@@ -409,6 +409,8 @@ public class AlignerFragment extends Fragment implements ServiceConnection, Seri
                                         }
                                     }
                                 }, 2000); // Retardo de 2000 milisegundos (2 segundos)
+                                // Reactivar botón después de procesar el frame
+                                mButtonSample3.setEnabled(true);
                             }
                             else
                             {

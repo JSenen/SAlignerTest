@@ -139,7 +139,7 @@ private int getColorForValue(int value) {
     }
 
     // Si el valor está entre 0 y 700, asigna negro
-    if (value <= 50) {
+    if (value <= 800) {
         Log.i("MatrixView", "Valor dentro del rango negro: " + value);
         return Color.HSVToColor(new float[]{0f, 0f, 0f}); // Negro
     }
@@ -152,13 +152,19 @@ private int getColorForValue(int value) {
     int discretizedValue = (value / step) * step;
 
     // Normaliza a un rango de brillo entre 0 y 1
-    float brightness = (float) discretizedValue / maxRange;
+    //float brightness = (float) discretizedValue / maxRange;
+    // Saturación fija para garantizar tonos naranjas visibles
+    float saturation = 0.8f; // Puedes ajustar entre 0.7 y 1 para variar intensidad
+    // Normaliza a un rango de brillo entre 0.3 y 1
+    float brightness = 0.3f + (float) discretizedValue / maxRange * 0.7f;
+    // Matiz fijo para naranja (30° en el espectro HSV)
+    float hue = 30f;
 
     // Log de los valores originales y su discretización
     Log.i("MatrixView", "Valor original: " + value + ", Discretizado: " + discretizedValue + ", Brillo: " + brightness);
 
-    // Genera un color en escala de grises (negro a blanco)
-    return Color.HSVToColor(new float[]{0f, 0f, brightness});
+    // Genera un color en escala de naranja
+    return Color.HSVToColor(new float[]{hue, saturation, brightness});
 }
 
 
